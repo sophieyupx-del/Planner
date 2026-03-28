@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sophie · Planner Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #F6F4EF; color: #1C1917; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 60px 24px; }
+  h1 { font-family: 'Lora', serif; font-size: 32px; font-weight: 600; margin-bottom: 6px; }
+  h1 em { font-style: italic; color: #7C3ABE; }
+  .sub { font-size: 13px; color: #92877F; margin-bottom: 40px; }
+  .weeks { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 480px; }
+  .week-link { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #E3DED7; border-radius: 12px; padding: 16px 20px; text-decoration: none; color: #1C1917; box-shadow: 0 1px 4px rgba(0,0,0,.05); transition: box-shadow .15s, transform .15s; }
+  .week-link:hover { box-shadow: 0 4px 14px rgba(0,0,0,.1); transform: translateY(-1px); }
+  .week-link .wl-left { display: flex; flex-direction: column; gap: 3px; }
+  .week-link .wl-title { font-weight: 600; font-size: 14px; }
+  .week-link .wl-range { font-size: 11.5px; color: #92877F; }
+  .week-link .wl-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .badge-current { background: #F2EAFB; color: #7C3ABE; border: 1px solid #D8B4F8; }
+  .badge-past    { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+  .arrow { color: #C4BDB6; font-size: 16px; }
+</style>
+</head>
+<body>
+  <h1>Sophie's <em>Planner</em></h1>
+  <p class="sub">每周日程 & 任务系统</p>
+
+  <div class="weeks">
+    <a class="week-link" href="sophie_planner_mar30.html">
+      <div class="wl-left">
+        <span class="wl-title">Week 5 — Mar 30 – Apr 4</span>
+        <span class="wl-range">🚨 Land Law Quiz (4/2) · 📝 Essay Research</span>
+      </div>
+      <span class="wl-badge badge-current">本周</span>
+    </a>
+    <!-- 每周新增一行，格式如下：
+    <a class="week-link" href="sophie_planner_apr6.html">
+      <div class="wl-left">
+        <span class="wl-title">Week 6 — Apr 6 – Apr 11</span>
+        <span class="wl-range">📝 Family Law Essay due 4/10</span>
+      </div>
+      <span class="wl-badge badge-current">本周</span>
+    </a>
+    -->
+  </div>
+</body>
+</html>

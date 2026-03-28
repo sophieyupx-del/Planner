@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sophie · Week 5 · Mar 29 – Apr 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F6F4EF;
+  --surface: #FFFFFF;
+  --border: #E3DED7;
+  --text: #1C1917;
+  --muted: #92877F;
+
+  --study:  #2553D4; --study-bg:  #EDF1FC;
+  --work:   #0F9260; --work-bg:   #E6F5EF;
+  --growth: #7C3ABE; --growth-bg: #F2EAFB;
+  --prep:   #B45309; --prep-bg:   #FEF3E2;
+
+  --urgent-c:#B91C1C; --urgent-bg:#FEF2F2; --urgent-bd:#FECACA;
+  --high-c:  #C2410C; --high-bg:  #FFF7ED; --high-bd:  #FED7AA;
+  --med-c:   #A16207; --med-bg:   #FEFCE8; --med-bd:   #FDE68A;
+  --low-c:   #15803D; --low-bg:   #F0FDF4; --low-bd:   #BBF7D0;
+
+  --hour-h: 54px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+.page { max-width: 1440px; margin: 0 auto; padding: 28px 22px 60px; }
+
+/* HEADER */
+.page-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+.page-header h1 { font-family: 'Lora', serif; font-size: 27px; font-weight: 600; letter-spacing: -.3px; }
+.page-header h1 em { font-style: italic; color: var(--growth); }
+.week-meta { font-size: 12px; color: var(--muted); }
+
+/* DEADLINE BANNER */
+.deadline-banner { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.dl-pill { display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600; border: 1px solid; }
+.dl-pill.red   { background: var(--urgent-bg); color: var(--urgent-c); border-color: var(--urgent-bd); }
+.dl-pill.orange{ background: var(--high-bg);   color: var(--high-c);   border-color: var(--high-bd); }
+.dl-pill .dl-icon { font-size: 13px; }
+
+/* LEGEND */
+.legend { display: flex; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--muted); }
+.leg-dot { width: 9px; height: 9px; border-radius: 2px; }
+
+/* CALENDAR */
+.cal-wrap { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.05); margin-bottom: 30px; }
+.cal-head { display: grid; grid-template-columns: 46px repeat(7, 1fr); border-bottom: 1.5px solid var(--border); }
+.ch-cell { padding: 11px 6px 9px; text-align: center; border-left: 1px solid var(--border); }
+.ch-cell:first-child { border-left: none; }
+.ch-dn { font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.ch-dd { font-family: 'Lora', serif; font-size: 19px; font-weight: 600; line-height: 1.1; margin-top: 1px; }
+.ch-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+.ch-cell.deadline .ch-dd { color: var(--urgent-c); }
+.ch-cell.deadline .ch-dn { color: var(--urgent-c); }
+
+.cal-body { display: grid; grid-template-columns: 46px repeat(7, 1fr); }
+.t-axis { display: flex; flex-direction: column; }
+.t-slot { height: var(--hour-h); display: flex; align-items: flex-start; padding-top: 3px; padding-right: 6px; justify-content: flex-end; font-size: 9px; font-weight: 600; color: var(--muted); border-top: 1px solid var(--border); }
+.t-slot:first-child { border-top: none; }
+
+.d-col { border-left: 1px solid var(--border); position: relative; }
+.h-line { height: var(--hour-h); border-top: 1px solid var(--border); }
+.h-line:first-child { border-top: none; }
+
+.ev { position: absolute; left: 3px; right: 3px; border-radius: 6px; padding: 4px 6px; font-size: 10px; line-height: 1.3; overflow: hidden; border-left: 3px solid transparent; z-index: 2; transition: transform .1s, box-shadow .1s; cursor: default; }
+.ev:hover { transform: scale(1.025); box-shadow: 0 4px 14px rgba(0,0,0,.13); z-index: 10; }
+.ev.study  { background: var(--study-bg);  border-color: var(--study);  color: var(--study); }
+.ev.work   { background: var(--work-bg);   border-color: var(--work);   color: var(--work); }
+.ev.growth { background: var(--growth-bg); border-color: var(--growth); color: var(--growth); }
+.ev.prep   { background: var(--prep-bg);   border-color: var(--prep);   color: var(--prep); }
+.ev-t { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-s { font-size: 9px; opacity: .7; margin-top: 1px; }
+
+/* SECTION */
+.section-hd { margin-bottom: 4px; }
+.section-hd h2 { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; }
+.section-hd h2 em { font-style: italic; color: var(--urgent-c); }
+.section-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+
+/* TODO GRID */
+.todo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+
+.card { background: var(--surface); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 5px rgba(0,0,0,.04); }
+.card-head { padding: 9px 13px 8px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.badge { font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; border: 1px solid; flex-shrink: 0; }
+.badge-urgent { background: var(--urgent-bg); color: var(--urgent-c); border-color: var(--urgent-bd); }
+.badge-high   { background: var(--high-bg);   color: var(--high-c);   border-color: var(--high-bd); }
+.badge-med    { background: var(--med-bg);     color: var(--med-c);    border-color: var(--med-bd); }
+.badge-low    { background: var(--low-bg);     color: var(--low-c);    border-color: var(--low-bd); }
+.card-title { font-size: 12.5px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-due { font-size: 10px; color: var(--muted); flex-shrink: 0; }
+
+.task-list { list-style: none; padding: 9px 13px 11px; display: flex; flex-direction: column; gap: 8px; }
+.task { display: flex; gap: 9px; align-items: flex-start; }
+.cb { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.cb:hover { border-color: var(--growth); }
+.cb.on { background: var(--growth); border-color: var(--growth); }
+.cb.on::after { content: '✓'; color: #fff; font-size: 9px; font-weight: 800; }
+.task.done .task-txt { text-decoration: line-through; opacity: .38; }
+.task-txt { font-size: 12px; line-height: 1.45; flex: 1; }
+.task-txt .detail { display: block; font-size: 10.5px; color: var(--muted); margin-top: 2px; font-style: italic; line-height: 1.4; }
+.est { font-size: 10px; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>Week 5 &nbsp;<em>Planner</em></h1>
+    <span class="week-meta">Mar 29 – Apr 4, 2026 · Auckland NZ</span>
+  </div>
+
+  <!-- DEADLINE PILLS -->
+  <div class="deadline-banner">
+    <div class="dl-pill red"><span class="dl-icon">🚨</span> Land Law Quiz — 周四 4/2 12:00pm (50分钟，计10%)</div>
+    <div class="dl-pill orange"><span class="dl-icon">📝</span> Family Law Essay — 4/10 截止 · 本周完成全部 research + 大纲</div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--study)"></div> Study</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--work)"></div> Work</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--growth)"></div> Growth 🎧</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--prep)"></div> 备课 Prep</div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="cal-wrap">
+    <div class="cal-head">
+      <div class="ch-cell"></div>
+      <div class="ch-cell"><div class="ch-dn">Sun</div><div class="ch-dd">29</div><div class="ch-sub">Mar</div></div>
+      <div class="ch-cell"><div class="ch-dn">Mon</div><div class="ch-dd">30</div><div class="ch-sub">Mar</div></div>
+      <div class="ch-cell"><div class="ch-dn">Tue</div><div class="ch-dd">31</div><div class="ch-sub">Mar</div></div>
+      <div class="ch-cell"><div class="ch-dn">Wed</div><div class="ch-dd">1</div><div class="ch-sub">Apr</div></div>
+      <div class="ch-cell deadline"><div class="ch-dn">Thu</div><div class="ch-dd">2</div><div class="ch-sub">🚨 Quiz</div></div>
+      <div class="ch-cell"><div class="ch-dn">Fri</div><div class="ch-dd">3</div><div class="ch-sub">Apr</div></div>
+      <div class="ch-cell"><div class="ch-dn">Sat</div><div class="ch-dd">4</div><div class="ch-sub">Apr</div></div>
+    </div>
+    <div class="cal-body" id="cal-body">
+      <div class="t-axis" id="t-axis"></div>
+      <div class="d-col" id="day-0"></div>
+      <div class="d-col" id="day-1"></div>
+      <div class="d-col" id="day-2"></div>
+      <div class="d-col" id="day-3"></div>
+      <div class="d-col" id="day-4"></div>
+      <div class="d-col" id="day-5"></div>
+      <div class="d-col" id="day-6"></div>
+    </div>
+  </div>
+
+  <!-- TODO -->
+  <div class="section-hd">
+    <h2>Task <em>List</em> — Week 5</h2>
+  </div>
+  <p class="section-sub">按紧急程度排列 · 点击复选框标记完成 · 状态自动保存</p>
+  <div class="todo-grid" id="todo-grid"></div>
+
+</div>
+
+<script>
+// ── CALENDAR ──────────────────────────────────
+const START = 7, END = 24, HH = 54;
+
+const axis = document.getElementById('t-axis');
+for (let h = START; h <= END; h++) {
+  const s = document.createElement('div');
+  s.className = 't-slot';
+  if (h < 24) s.textContent = h === 12 ? '12 PM' : h > 12 ? `${h-12} PM` : `${h} AM`;
+  axis.appendChild(s);
+}
+for (let d = 0; d < 7; d++) {
+  const col = document.getElementById(`day-${d}`);
+  for (let i = 0; i <= END - START; i++) {
+    const l = document.createElement('div'); l.className = 'h-line'; col.appendChild(l);
+  }
+}
+document.getElementById('cal-body').style.height = ((END - START + 1) * HH) + 'px';
+
+function toY(t) { const [h,m] = t.split(':').map(Number); return (h-START)*HH + (m/60)*HH; }
+function toH(s,e) { const [sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number); return ((eh*60+em)-(sh*60+sm))/60*HH; }
+
+function ev(day, s, e, title, type, sub) {
+  const col = document.getElementById(`day-${day}`);
+  const el = document.createElement('div');
+  el.className = `ev ${type}`;
+  el.style.top = toY(s) + 'px';
+  el.style.height = Math.max(toH(s,e) - 2, 16) + 'px';
+  el.innerHTML = `<div class="ev-t">${title}</div>${sub ? `<div class="ev-s">${s}–${e} · ${sub}</div>` : `<div class="ev-s">${s}–${e}</div>`}`;
+  col.appendChild(el);
+}
+
+// Sun 3/29
+ev(0,'20:10','21:10','English Tutoring','work');
+
+// Mon 3/30
+ev(1,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
+ev(1,'10:00','12:00','LAW 305 (Equity)','study','OGGB 260-115');
+ev(1,'12:30','14:45','Study Block','study');
+ev(1,'15:00','17:00','LAW 304 (Land Law)','study','Maths Phys 303-G20');
+ev(1,'17:00','18:00','🎧 Growth · Home','growth','Train/Bus');
+ev(1,'21:30','23:00','Tutoring – Cody','work');
+
+// Tue 3/31
+ev(2,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
+ev(2,'10:00','12:00','LAWGENRL 433','study','Maths Phys 303-G20');
+ev(2,'12:00','13:00','🎧 Growth · Home','growth','Train/Bus');
+
+// Wed 4/1
+ev(3,'00:00','01:00','Tutoring – Owen','work');
+ev(3,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
+ev(3,'10:00','11:00','LAW 304 (Land Law)','study','LibB15');
+ev(3,'11:00','12:00','LAW 305 (Equity)','study','206-115');
+ev(3,'12:00','13:00','🎧 Growth · Home','growth','Train/Bus');
+ev(3,'21:30','23:00','Tutoring – Cody','work');
+
+// Thu 4/2 — QUIZ DAY
+ev(4,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
+ev(4,'09:00','10:00','LAWGENRL 433','study','Maths Phys 303-G20');
+ev(4,'14:00','15:00','LAWCOMM 416 (Tax)','study','GenLibrary 109-B15');
+ev(4,'15:00','16:00','🎧 Growth · Home','growth','Train/Bus');
+
+// Fri 4/3
+ev(5,'19:00','21:00','RE2 Tutoring','work');
+ev(5,'21:30','22:30','Cody – Think 4','work');
+
+// Sat 4/4
+ev(6,'16:00','17:00','Tutoring – Gavin','work');
+ev(6,'20:10','21:10','English Tutoring (Adult)','work');
+
+// ── TO-DO DATA ────────────────────────────────
+const STORAGE_KEY = 'sophie-planner-w5-mar30';
+
+const cards = [
+  {
+    id: 'quiz',
+    badge: 'urgent',
+    title: '🚨 Land Law Quiz 备考',
+    due: '周四 4/2 12:00pm · 50分钟 · 10%',
+    items: [
+      { id:'q1', text:'Quiz 复习 — Mau Whenua Inc v Shelly Bay Investments Ltd (2019)', detail:'[1]–[42]; [54]–[76] only', est:'1.5h' },
+      { id:'q2', text:'Quiz 复习 — Regal Castings Ltd v Lightbody [2008] NZSC 87', detail:'pp. 433-434, 436, 457, 459, 461-462, 465-466, 486-487, 477-478, 491, 493 + Tipping J at 477-480', est:'1.5h' },
+      { id:'q3', text:'Quiz 复习 — Hojsgaard v Registrar-General of Land [2023] 3 NZLR 696', detail:'Full read', est:'1h' },
+    ]
+  },
+  {
+    id: 'land-mon',
+    badge: 'urgent',
+    title: '📖 Land Law — 周一 lecture 预习',
+    due: '周一 3/30 上课前',
+    items: [
+      { id:'lm1', text:'CB 113–120 · Erueti "Māori Customary Law and Land Tenure"', detail:'Topic: Tikanga Māori and state law', est:'30m' },
+      { id:'lm2', text:'CB 120–123 · Locke "The Second Treatise"', detail:'', est:'20m' },
+      { id:'lm3', text:'CB 124–129 · Bennion "Māori Land Law"', detail:'', est:'30m' },
+      { id:'lm4', text:'Te Ture Whenua Maori Act 1993 — Preamble, ss 17 & 129', detail:'', est:'20m' },
+    ]
+  },
+  {
+    id: 'equity-mon',
+    badge: 'urgent',
+    title: '📖 Equity — 周一 lecture 预习',
+    due: '周一 3/30 上课前',
+    items: [
+      { id:'em1', text:'PD Finn Fiduciary Obligations — pp. 1–5', detail:'Topic: Fiduciary obligations', est:'20m' },
+      { id:'em2', text:'Chirnside v Fay [2006] NZSC 68', detail:'pp. 433-434, 439-466, 470-479', est:'45m' },
+      { id:'em3', text:'Bristol and West Building Society v Mothew [1998] Ch 1 (CA)', detail:'', est:'30m' },
+      { id:'em4', text:'Hospital Products Ltd v United States Surgical Corp (1984) 156 CLR 41', detail:'', est:'30m' },
+    ]
+  },
+  {
+    id: 'land-wed',
+    badge: 'high',
+    title: '📖 Land Law — 周三 lecture 预习',
+    due: '周三 4/1 上课前',
+    items: [
+      { id:'lw1', text:'CB 147–159 · Warin v Registrar-General of Land (2008) 10 NZCPR 73 (HC)', detail:'', est:'45m' },
+      { id:'lw2', text:'CB 160–164 · Re Warin – Whangaruru Whakaturia 4 Lot 32 DP 126453 (2010)', detail:'', est:'30m' },
+      { id:'lw3', text:'Mercury NZ Ltd v Māori Land Court [2023] NZHC 1644', detail:'[11]–[59], esp. [39]–[59]', est:'45m' },
+    ]
+  },
+  {
+    id: 'equity-wed',
+    badge: 'high',
+    title: '📖 Equity — 周三 lecture 预习',
+    due: '周三 4/1 上课前',
+    items: [
+      { id:'ew1', text:'Paper Reclaim Ltd v Aotearoa International Ltd [2007] NZSC 26', detail:'Topic: Identifying fiduciary obligations', est:'30m' },
+      { id:'ew2', text:'Hospital Products Ltd v US Surgical Corp (1984) 156 CLR 41', detail:'(Further reading from Wed perspective)', est:'20m' },
+      { id:'ew3', text:'Amaltal Corp Ltd v Maruha Corp [2007] NZSC 40', detail:'', est:'30m' },
+      { id:'ew4', text:'A, B, C v D and E [2024] NZSC 161', detail:'', est:'40m' },
+      { id:'ew5', text:'Hopcraft v Close Brothers Ltd [2025] UKSC 33', detail:'', est:'40m' },
+    ]
+  },
+  {
+    id: 'essay',
+    badge: 'high',
+    title: '📝 Family Law Essay — Research & Outline',
+    due: '本周内全部完成 · Essay due 4/10',
+    items: [
+      { id:'es1', text:'Ayesha Scott "Surviving post-separation financial violence" (2020) 10 NZFLJ 27', detail:'', est:'45m' },
+      { id:'es2', text:'Tomar v Khatri [2026] NZCA 21', detail:'', est:'30m' },
+      { id:'es3', text:'S v R [2021] NZCA 667, [2021] NZFLR 576', detail:'', est:'30m' },
+      { id:'es4', text:'Short v Short [2021] NZHC 3404', detail:'', est:'30m' },
+      { id:'es5', text:'Select Committee Report on the Bill (Justice Committee, June 2024 — Bill 285-2)', detail:'', est:'30m' },
+      { id:'es6', text:'Research on Australian cases', detail:'', est:'1h' },
+      { id:'es7', text:'Katherine O&#x2019;Donovan — Sexual Divisions in Law', detail:'Relevant sections', est:'45m' },
+      { id:'es8', text:'Ruka v Department of Social Welfare [1997] 1 NZLR 154 (CA)', detail:'', est:'30m' },
+      { id:'es9', text:'G v G [1997] NZFLR 49 (HC)', detail:'', est:'20m' },
+      { id:'es10', text:'Surrey v Surrey [2008] NZCA 565, [2010] 2 NZLR 581', detail:'', est:'30m' },
+      { id:'es11', text:'✍️ 完成论文大纲', detail:'1500字 · 本周硬指标', est:'1h' },
+    ]
+  },
+  {
+    id: 'family-catchup',
+    badge: 'med',
+    title: '📼 Family Law 补课',
+    due: '周四 4/2 前',
+    items: [
+      { id:'fc1', text:'Family Law — 补上周 lecture recording', detail:'LAWGENRL 433 · 1hr', est:'1h' },
+      { id:'fc2', text:'Kacem v Bashir [2010] NZSC 112', detail:'（上周遗留，已高亮标注）', est:'30m' },
+      { id:'fc3', text:'Newton v Family Court', detail:'（上周遗留）', est:'30m' },
+    ]
+  },
+  {
+    id: 'tax',
+    badge: 'med',
+    title: '📖 Tax Law — 本周阅读',
+    due: '周四 4/2 上课前',
+    items: [
+      { id:'tx1', text:'Textbook — Chapter on Income', detail:'LAWCOMM 416', est:'1h' },
+      { id:'tx2', text:'Heaton v Bell', detail:'', est:'30m' },
+      { id:'tx3', text:'Grove v YMCA', detail:'', est:'30m' },
+    ]
+  },
+];
+
+// ── STORAGE ───────────────────────────────────
+async function load() {
+  try { const r = await window.storage.get(STORAGE_KEY); return r ? JSON.parse(r.value) : {}; }
+  catch { return {}; }
+}
+async function save(state) {
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) { console.error('Storage error', e); }
+}
+
+async function toggle(box) {
+  const li = box.parentElement;
+  const id = li.dataset.id;
+  box.classList.toggle('on');
+  li.classList.toggle('done');
+  const state = await load();
+  state[id] = box.classList.contains('on');
+  await save(state);
+}
+
+async function render() {
+  const checked = await load();
+  const grid = document.getElementById('todo-grid');
+  const labels = { urgent:'🔥 Urgent', high:'⚠️ High', med:'📌 Medium', low:'📋 Low' };
+  cards.forEach(card => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = `
+      <div class="card-head">
+        <span class="badge badge-${card.badge}">${labels[card.badge]}</span>
+        <span class="card-title">${card.title}</span>
+        <span class="card-due">${card.due}</span>
+      </div>
+      <ul class="task-list">
+        ${card.items.map(item => {
+          const done = !!checked[item.id];
+          return `<li class="task${done?' done':''}" data-id="${item.id}">
+            <div class="cb${done?' on':''}" onclick="toggle(this)"></div>
+            <div class="task-txt">${item.text}${item.detail?`<span class="detail">${item.detail}</span>`:''}
+            </div>
+            <span class="est">${item.est}</span>
+          </li>`;
+        }).join('')}
+      </ul>`;
+    grid.appendChild(c);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
