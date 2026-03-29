@@ -17,6 +17,7 @@
   --work:   #0F9260; --work-bg:   #E6F5EF;
   --growth: #7C3ABE; --growth-bg: #F2EAFB;
   --prep:   #B45309; --prep-bg:   #FEF3E2;
+  --selfstudy: #0E7490; --selfstudy-bg: #ECFEFF;
 
   --urgent-c:#B91C1C; --urgent-bg:#FEF2F2; --urgent-bd:#FECACA;
   --high-c:  #C2410C; --high-bg:  #FFF7ED; --high-bd:  #FED7AA;
@@ -73,6 +74,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .ev.work   { background: var(--work-bg);   border-color: var(--work);   color: var(--work); }
 .ev.growth { background: var(--growth-bg); border-color: var(--growth); color: var(--growth); }
 .ev.prep   { background: var(--prep-bg);   border-color: var(--prep);   color: var(--prep); }
+.ev.selfstudy { background: var(--selfstudy-bg); border-color: var(--selfstudy); color: var(--selfstudy); }
+.ev.chores { background: #FFF7ED; border-color: #D97706; color: #D97706; }
 .ev-t { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ev-s { font-size: 9px; opacity: .7; margin-top: 1px; }
 
@@ -116,6 +119,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 #sync-status { font-size: 11px; color: var(--muted); }
 #clear-token { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: underline; display: none; }
 #clear-token:hover { color: var(--urgent-c); }
+
+/* EVENT MODAL */
+#ev-modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+#ev-modal.open { display: flex; }
+#ev-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(2px); }
+#ev-box { position: relative; background: #fff; border-radius: 14px; padding: 22px 24px 20px; max-width: 380px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,.18); z-index: 1; }
+#ev-box .ev-modal-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 9px; border-radius: 20px; margin-bottom: 10px; }
+.tag-study  { background: var(--study-bg);  color: var(--study); }
+.tag-work   { background: var(--work-bg);   color: var(--work); }
+.tag-growth { background: var(--growth-bg); color: var(--growth); }
+.tag-prep   { background: var(--prep-bg);   color: var(--prep); }
+.tag-selfstudy { background: var(--selfstudy-bg); color: var(--selfstudy); }
+#ev-box h3 { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; margin-bottom: 12px; line-height: 1.3; }
+#ev-box .ev-modal-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text); margin-bottom: 7px; }
+#ev-box .ev-modal-row .icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 14px; margin-top: 1px; }
+#ev-box .ev-modal-row span { line-height: 1.4; }
+#ev-close { position: absolute; top: 14px; right: 16px; font-size: 20px; color: var(--muted); cursor: pointer; line-height: 1; background: none; border: none; padding: 0; }
+#ev-close:hover { color: var(--text); }
 </style>
 </head>
 <body>
@@ -150,6 +171,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     <div class="leg"><div class="leg-dot" style="background:var(--work)"></div> Work</div>
     <div class="leg"><div class="leg-dot" style="background:var(--growth)"></div> Growth 🎧</div>
     <div class="leg"><div class="leg-dot" style="background:var(--prep)"></div> 备课 Prep</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--selfstudy)"></div> Study 自习</div>
   </div>
 
   <!-- CALENDAR -->
@@ -183,6 +205,20 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   <p class="section-sub">按紧急程度排列 · 点击复选框标记完成 · 状态自动保存</p>
   <div class="todo-grid" id="todo-grid"></div>
 
+
+<!-- EVENT MODAL -->
+<div id="ev-modal" onclick="closeModal(event)">
+  <div id="ev-overlay"></div>
+  <div id="ev-box">
+    <button id="ev-close" onclick="document.getElementById('ev-modal').classList.remove('open')">✕</button>
+    <div class="ev-modal-tag" id="ev-modal-tag"></div>
+    <h3 id="ev-modal-title"></h3>
+    <div class="ev-modal-row" id="ev-modal-time"><span class="icon">🕐</span><span></span></div>
+    <div class="ev-modal-row" id="ev-modal-loc" style="display:none"><span class="icon">📍</span><span></span></div>
+    <div class="ev-modal-row" id="ev-modal-note" style="display:none"><span class="icon">📝</span><span></span></div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -207,53 +243,87 @@ document.getElementById('cal-body').style.height = ((END - START + 1) * HH) + 'p
 function toY(t) { const [h,m] = t.split(':').map(Number); return (h-START)*HH + (m/60)*HH; }
 function toH(s,e) { const [sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number); return ((eh*60+em)-(sh*60+sm))/60*HH; }
 
-function ev(day, s, e, title, type, sub) {
+function openModal(title, type, s, e, loc, note) {
+  const labels = { study:'Study 📖', work:'Work 💼', growth:'Growth 🎧', prep:'Prep 备课', selfstudy:'自习 📚' };
+  const tagEl = document.getElementById('ev-modal-tag');
+  tagEl.textContent = labels[type] || type;
+  tagEl.className = 'ev-modal-tag tag-' + type;
+  document.getElementById('ev-modal-title').textContent = title;
+  document.getElementById('ev-modal-time').querySelector('span:last-child').textContent = s + ' – ' + e;
+  const locRow = document.getElementById('ev-modal-loc');
+  if (loc) { locRow.querySelector('span:last-child').textContent = loc; locRow.style.display = 'flex'; }
+  else { locRow.style.display = 'none'; }
+  const noteRow = document.getElementById('ev-modal-note');
+  if (note) { noteRow.querySelector('span:last-child').textContent = note; noteRow.style.display = 'flex'; }
+  else { noteRow.style.display = 'none'; }
+  document.getElementById('ev-modal').classList.add('open');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('ev-modal') || e.target === document.getElementById('ev-overlay'))
+    document.getElementById('ev-modal').classList.remove('open');
+}
+
+function ev(day, s, e, title, type, loc, note) {
   const col = document.getElementById(`day-${day}`);
   const el = document.createElement('div');
   el.className = `ev ${type}`;
   el.style.top = toY(s) + 'px';
   el.style.height = Math.max(toH(s,e) - 2, 16) + 'px';
-  el.innerHTML = `<div class="ev-t">${title}</div>${sub ? `<div class="ev-s">${s}–${e} · ${sub}</div>` : `<div class="ev-s">${s}–${e}</div>`}`;
+  el.style.cursor = 'pointer';
+  el.innerHTML = `<div class="ev-t">${title}</div><div class="ev-s">${s}–${e}${loc ? ' · ' + loc : ''}</div>`;
+  el.onclick = () => openModal(title, type, s, e, loc, note);
   col.appendChild(el);
 }
 
 // Sun 3/29
-ev(0,'20:10','21:10','English Tutoring','work');
+ev(0,'14:00','15:45','Land Law Readings','selfstudy','','自习：Land Law 课前阅读');
+ev(0,'20:10','21:10','English Tutoring','work','线上','英语家教');
 
 // Mon 3/30
-ev(1,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
-ev(1,'10:00','12:00','LAW 305 (Equity)','study','OGGB 260-115');
-ev(1,'12:30','14:45','Study Block','study');
-ev(1,'15:00','17:00','LAW 304 (Land Law)','study','Maths Phys 303-G20');
-ev(1,'17:00','18:00','🎧 Growth · Home','growth','Train/Bus');
-ev(1,'21:30','23:00','Tutoring – Cody','work');
+ev(1,'07:30','08:25','🎧 Growth · Commute','growth','Train / Bus','阅读或听 Podcast');
+ev(1,'09:00','10:00','Study','selfstudy','','自习时间');
+ev(1,'10:00','12:00','LAW 305 — Land Law','study','OGGB 260-115','Topic: Tikanga Māori and state law');
+ev(1,'12:30','14:45','Study','selfstudy','','自习时间');
+ev(1,'15:00','17:00','LAW 304 — Equity','study','Maths Phys 303-G20','Topic: Fiduciary obligations');
+ev(1,'17:00','18:00','🎧 Growth · Home','growth','Train / Bus','阅读或听 Podcast');
+ev(1,'18:00','19:00','备课','prep','','家教备课');
+ev(1,'21:30','23:00','Tutoring – Cody','work','线上','英语家教');
 
 // Tue 3/31
-ev(2,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
-ev(2,'10:00','12:00','LAWGENRL 433','study','Maths Phys 303-G20');
-ev(2,'12:00','13:00','🎧 Growth · Home','growth','Train/Bus');
+ev(2,'07:30','08:25','🎧 Growth · Commute','growth','Train / Bus','阅读或听 Podcast');
+ev(2,'10:00','12:00','LAWGENRL 433 — Family Law','study','Maths Phys 303-G20','Family Law lecture');
+ev(2,'12:00','13:00','🎧 Growth · Home','growth','Train / Bus','阅读或听 Podcast');
+ev(2,'12:30','13:00','Haircut','chores','','理发');
+ev(2,'14:30','17:00','Study','selfstudy','','自习时间');
 
 // Wed 4/1
-ev(3,'00:00','01:00','Tutoring – Owen','work');
-ev(3,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
-ev(3,'10:00','11:00','LAW 304 (Land Law)','study','LibB15');
-ev(3,'11:00','12:00','LAW 305 (Equity)','study','206-115');
-ev(3,'12:00','13:00','🎧 Growth · Home','growth','Train/Bus');
-ev(3,'21:30','23:00','Tutoring – Cody','work');
+ev(3,'07:30','08:25','🎧 Growth · Commute','growth','Train / Bus','阅读或听 Podcast');
+ev(3,'09:00','10:00','Study','selfstudy','','自习时间');
+ev(3,'10:00','11:00','LAW 304 — Equity','study','LibB15','Workshop / Tutorial');
+ev(3,'11:00','12:00','LAW 305 — Land Law','study','206-115','Workshop / Tutorial');
+ev(3,'12:00','13:00','🎧 Growth · Home','growth','Train / Bus','阅读或听 Podcast');
+ev(3,'14:00','17:00','Study','selfstudy','','自习时间');
+ev(3,'19:30','20:30','备课','prep','','家教备课');
+ev(3,'21:30','23:00','Tutoring – Cody','work','线上','英语家教');
 
 // Thu 4/2 — QUIZ DAY
-ev(4,'07:30','08:25','🎧 Growth · Commute','growth','Train/Bus');
-ev(4,'09:00','10:00','LAWGENRL 433','study','Maths Phys 303-G20');
-ev(4,'14:00','15:00','LAWCOMM 416 (Tax)','study','GenLibrary 109-B15');
-ev(4,'15:00','16:00','🎧 Growth · Home','growth','Train/Bus');
+ev(4,'00:00','01:00','Tutoring – Owen','work','线上','英语家教');
+ev(4,'07:30','08:25','🎧 Growth · Commute','growth','Train / Bus','阅读或听 Podcast');
+ev(4,'09:00','10:00','LAWGENRL 433 — Family Law','study','Maths Phys 303-G20','Family Law lecture');
+ev(4,'11:00','13:30','Study','selfstudy','','自习时间');
+ev(4,'14:00','15:00','LAWCOMM 416 — Tax Law','study','GenLibrary 109-B15','Tax Law lecture');
+ev(4,'15:00','16:00','🎧 Growth · Home','growth','Train / Bus','阅读或听 Podcast');
+ev(4,'16:30','17:30','Study','selfstudy','','自习时间');
 
 // Fri 4/3
-ev(5,'19:00','21:00','RE2 Tutoring','work');
-ev(5,'21:30','22:30','Cody – Think 4','work');
+ev(5,'09:00','11:00','Study','selfstudy','','自习时间');
+ev(5,'11:00','12:00','备课','prep','','家教备课');
+ev(5,'19:00','21:00','RE2 Tutoring','work','线上','英语家教');
+ev(5,'21:30','22:30','Cody – Think 4','work','线上','Think 4 备课/辅导');
 
 // Sat 4/4
-ev(6,'16:00','17:00','Tutoring – Gavin','work');
-ev(6,'20:10','21:10','English Tutoring (Adult)','work');
+ev(6,'16:00','17:00','Tutoring – Gavin Think 0','work','线上','英语家教');
+ev(6,'20:10','21:10','English Tutoring (Adult)','work','线上','成人英语家教');
 
 // ── TO-DO DATA ────────────────────────────────
 const STORAGE_KEY = 'sophie-planner-w5-mar30';
