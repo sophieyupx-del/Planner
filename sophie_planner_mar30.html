@@ -105,6 +105,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .task-txt { font-size: 12px; line-height: 1.45; flex: 1; }
 .task-txt .detail { display: block; font-size: 10.5px; color: var(--muted); margin-top: 2px; font-style: italic; line-height: 1.4; }
 .est { font-size: 10px; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+
+/* TOKEN SETUP */
+#token-banner { display: none; align-items: center; gap: 10px; background: var(--urgent-bg); border: 1px solid var(--urgent-bd); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; flex-wrap: wrap; }
+#token-banner p { font-size: 12.5px; color: var(--urgent-c); font-weight: 500; flex: 1; min-width: 180px; }
+#token-banner input { flex: 2; min-width: 200px; font-size: 12px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--urgent-bd); font-family: monospace; outline: none; }
+#token-banner button { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; border: none; background: var(--urgent-c); color: #fff; cursor: pointer; }
+#token-banner button:hover { opacity: .85; }
+#sync-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; min-height: 18px; }
+#sync-status { font-size: 11px; color: var(--muted); }
+#clear-token { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: underline; display: none; }
+#clear-token:hover { color: var(--urgent-c); }
 </style>
 </head>
 <body>
@@ -120,6 +131,17 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   <div class="deadline-banner">
     <div class="dl-pill red"><span class="dl-icon">🚨</span> Land Law Quiz — 周四 4/2 12:00pm (50分钟，计10%)</div>
     <div class="dl-pill orange"><span class="dl-icon">📝</span> Family Law Essay — 4/10 截止 · 本周完成全部 research + 大纲</div>
+  </div>
+
+  <!-- TOKEN SETUP -->
+  <div id="token-banner">
+    <p>🔐 首次使用：输入 GitHub Token 以启用跨设备同步</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    <button onclick="saveToken()">保存</button>
+  </div>
+  <div id="sync-bar">
+    <span id="sync-status"></span>
+    <span id="clear-token" onclick="clearToken()">切换 Token</span>
   </div>
 
   <!-- LEGEND -->
@@ -339,14 +361,63 @@ const cards = [
   },
 ];
 
-// ── STORAGE ───────────────────────────────────
-async function load() {
-  try { const r = await window.storage.get(STORAGE_KEY); return r ? JSON.parse(r.value) : {}; }
+// ── GITHUB API STORAGE ────────────────────────
+const REPO    = 'sophieyupx-del/Planner';
+const GH_FILE = 'state.json';
+const TOKEN_KEY = 'gh_planner_token';
+
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t.startsWith('ghp_') && !t.startsWith('github_pat_')) {
+    setStatus('⚠️ Token 格式不对，请重新检查', true); return;
+  }
+  localStorage.setItem(TOKEN_KEY, t);
+  document.getElementById('token-banner').style.display = 'none';
+  document.getElementById('clear-token').style.display = 'inline';
+  setStatus('Token 已保存，正在加载数据…');
+  init();
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('token-banner').style.display = 'flex';
+  document.getElementById('clear-token').style.display = 'none';
+  setStatus('');
+}
+
+function setStatus(msg, isErr) {
+  const el = document.getElementById('sync-status');
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--urgent-c)' : 'var(--muted)';
+}
+
+async function ghFetch(method, body) {
+  const token = getToken();
+  const url = `https://api.github.com/repos/${REPO}/contents/${GH_FILE}`;
+  const opts = { method, headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  if (!res.ok && res.status !== 404) throw new Error(`GitHub API ${res.status}`);
+  return res.status === 404 ? null : await res.json();
+}
+
+let fileSha = null;
+
+async function loadState() {
+  const data = await ghFetch('GET');
+  if (!data) return {};
+  fileSha = data.sha;
+  try { return JSON.parse(atob(data.content.replace(/\n/g,''))); }
   catch { return {}; }
 }
-async function save(state) {
-  try { await window.storage.set(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e) { console.error('Storage error', e); }
+
+async function saveState(state) {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+  const body = { message: `update state ${new Date().toISOString()}`, content, ...(fileSha ? { sha: fileSha } : {}) };
+  const data = await ghFetch('PUT', body);
+  if (data && data.content) fileSha = data.content.sha;
 }
 
 async function toggle(box) {
@@ -354,14 +425,42 @@ async function toggle(box) {
   const id = li.dataset.id;
   box.classList.toggle('on');
   li.classList.toggle('done');
-  const state = await load();
-  state[id] = box.classList.contains('on');
-  await save(state);
+  if (!getToken()) return;
+  setStatus('保存中…');
+  try {
+    const state = await loadState();
+    state[id] = box.classList.contains('on');
+    await saveState(state);
+    setStatus('✓ 已同步');
+    setTimeout(() => setStatus(''), 2000);
+  } catch(e) {
+    setStatus('⚠️ 同步失败，请检查 Token', true);
+  }
 }
 
-async function render() {
-  const checked = await load();
+async function init() {
+  const token = getToken();
+  if (!token) {
+    document.getElementById('token-banner').style.display = 'flex';
+    renderCards({});
+    return;
+  }
+  document.getElementById('clear-token').style.display = 'inline';
+  setStatus('加载中…');
+  let checked = {};
+  try {
+    checked = await loadState();
+    setStatus('✓ 已同步');
+    setTimeout(() => setStatus(''), 2000);
+  } catch(e) {
+    setStatus('⚠️ 无法连接 GitHub，请检查 Token', true);
+  }
+  renderCards(checked);
+}
+
+function renderCards(checked) {
   const grid = document.getElementById('todo-grid');
+  grid.innerHTML = '';
   const labels = { urgent:'🔥 Urgent', high:'⚠️ High', med:'📌 Medium', low:'📋 Low' };
   cards.forEach(card => {
     const c = document.createElement('div');
@@ -387,7 +486,7 @@ async function render() {
   });
 }
 
-render();
+init();
 </script>
 </body>
 </html>
