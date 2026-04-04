@@ -17,7 +17,7 @@
   .week-link .wl-left { display: flex; flex-direction: column; gap: 3px; }
   .week-link .wl-title { font-weight: 600; font-size: 14px; }
   .week-link .wl-range { font-size: 11.5px; color: #92877F; }
-  .week-link .wl-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .week-link .wl-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
   .badge-current { background: #F2EAFB; color: #7C3ABE; border: 1px solid #D8B4F8; }
   .badge-past    { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
   .arrow { color: #C4BDB6; font-size: 16px; }
@@ -26,24 +26,24 @@
 <body>
   <h1>Sophie's <em>Planner</em></h1>
   <p class="sub">每周日程 & 任务系统</p>
-
   <div class="weeks">
+ 
+    <a class="week-link" href="week-0405-0411.html">
+      <div class="wl-left">
+        <span class="wl-title">期中假期 Week 1 — Apr 5–11</span>
+        <span class="wl-range">🔴 Essay due Apr 10 · 📚 Catch-up readings</span>
+      </div>
+      <span class="wl-badge badge-current">本周</span>
+    </a>
+ 
     <a class="week-link" href="sophie_planner_mar30.html">
       <div class="wl-left">
         <span class="wl-title">Week 5 — Mar 30 – Apr 4</span>
         <span class="wl-range">🚨 Land Law Quiz (4/2) · 📝 Essay Research</span>
       </div>
-      <span class="wl-badge badge-current">本周</span>
+      <span class="wl-badge badge-past">已完成</span>
     </a>
-    <!-- 每周新增一行，格式如下：
-    <a class="week-link" href="sophie_planner_apr6.html">
-      <div class="wl-left">
-        <span class="wl-title">Week 6 — Apr 6 – Apr 11</span>
-        <span class="wl-range">📝 Family Law Essay due 4/10</span>
-      </div>
-      <span class="wl-badge badge-current">本周</span>
-    </a>
-    -->
+ 
   </div>
 </body>
 </html>
