@@ -696,10 +696,15 @@
           <span class="block-time">17:00–18:00</span>
           Land Law: Problem Q
         </div>
-        <!-- 21:30–23:00 Cody tutoring -->
-        <div class="block work" style="top:810px;height:87px">
-          <span class="block-time">21:30–23:00</span>
+        <!-- 20:30–22:00 Cody tutoring -->
+        <div class="block work" style="top:750px;height:87px">
+          <span class="block-time">20:30–22:00</span>
           Tutoring — Cody
+        </div>
+        <!-- 23:00–00:00 Owen tutoring -->
+        <div class="block work" style="top:900px;height:30px">
+          <span class="block-time">23:00–00:00</span>
+          Tutoring — Owen
         </div>
       </div>
     </div>
@@ -710,7 +715,6 @@
         THU
         <div class="day-num">9</div>
       </div>
-      <div class="overnight-note">⚡ 00:00–01:00 Owen</div>
       <div class="day-body">
         <div class="hour-line" style="top:0px"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
         <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
@@ -763,14 +767,14 @@
           <span class="block-time">13:00–15:00</span>
           🎉 Rest / Chores
         </div>
-        <!-- 19:00–21:00 RE2 tutoring -->
-        <div class="block work" style="top:660px;height:117px">
-          <span class="block-time">19:00–21:00</span>
+        <!-- 18:00–20:00 RE2 tutoring -->
+        <div class="block work" style="top:600px;height:117px">
+          <span class="block-time">18:00–20:00</span>
           Tutoring — RE2
         </div>
-        <!-- 21:30–22:30 Cody Think 4 -->
-        <div class="block work" style="top:810px;height:57px">
-          <span class="block-time">21:30–22:30</span>
+        <!-- 20:30–21:30 Cody Think 4 -->
+        <div class="block work" style="top:750px;height:57px">
+          <span class="block-time">20:30–21:30</span>
           Cody Think 4
         </div>
       </div>
@@ -799,14 +803,9 @@
           <span class="block-time">14:00–16:00</span>
           Chores / Admin
         </div>
-        <!-- 16:00–17:00 Gavin -->
-        <div class="block work" style="top:480px;height:57px">
-          <span class="block-time">16:00–17:00</span>
-          Gavin Think 0
-        </div>
-        <!-- 20:10–21:10 Adult English -->
-        <div class="block work" style="top:732px;height:57px">
-          <span class="block-time">20:10–21:10</span>
+        <!-- 19:00–20:00 Adult English -->
+        <div class="block work" style="top:660px;height:57px">
+          <span class="block-time">19:00–20:00</span>
           Adult English
         </div>
       </div>
@@ -991,27 +990,23 @@
     <div class="task-section">
       <div class="task-item work-item">
         <input type="checkbox" id="w1" onchange="handleCheck(this)">
-        <label class="task-label" for="w1">English tutoring — Cody <span class="tag time">Wed 21:30</span></label>
+        <label class="task-label" for="w1">English tutoring — Cody <span class="tag time">Wed 20:30</span></label>
       </div>
       <div class="task-item work-item">
         <input type="checkbox" id="w2" onchange="handleCheck(this)">
-        <label class="task-label" for="w2">Tutoring — Owen <span class="tag time">Thu 00:00</span></label>
+        <label class="task-label" for="w2">Tutoring — Owen <span class="tag time">Wed 23:00</span></label>
       </div>
       <div class="task-item work-item">
         <input type="checkbox" id="w3" onchange="handleCheck(this)">
-        <label class="task-label" for="w3">RE2 tutoring <span class="tag time">Fri 19:00</span></label>
+        <label class="task-label" for="w3">RE2 tutoring <span class="tag time">Fri 18:00</span></label>
       </div>
       <div class="task-item work-item">
         <input type="checkbox" id="w4" onchange="handleCheck(this)">
-        <label class="task-label" for="w4">Cody — Think 4 <span class="tag time">Fri 21:30</span></label>
+        <label class="task-label" for="w4">Cody — Think 4 <span class="tag time">Fri 20:30</span></label>
       </div>
       <div class="task-item work-item">
         <input type="checkbox" id="w5" onchange="handleCheck(this)">
-        <label class="task-label" for="w5">English tutoring — Gavin Think 0 <span class="tag time">Sat 16:00</span></label>
-      </div>
-      <div class="task-item work-item">
-        <input type="checkbox" id="w6" onchange="handleCheck(this)">
-        <label class="task-label" for="w6">English Tutoring — Adult English <span class="tag time">Sat 20:10</span></label>
+        <label class="task-label" for="w5">English Tutoring — Adult English <span class="tag time">Sat 19:00</span></label>
       </div>
     </div>
     <div class="progress-wrap">
@@ -1191,7 +1186,7 @@
     calcProgress(['s1','s2','s3','s4','s5','s6','s7','s8','s9'], 'essay-prog', 'essay-prog-label');
     calcProgress(['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11'], 'tax-prog', 'tax-prog-label');
     calcProgress(['e1','e2','e3','f1','f2','f3','f4','l1'], 'other-prog', 'other-prog-label');
-    calcProgress(['w1','w2','w3','w4','w5','w6'], 'work-prog', 'work-prog-label');
+    calcProgress(['w1','w2','w3','w4','w5'], 'work-prog', 'work-prog-label');
   }
 
   function calcProgress(ids, barId, labelId) {
