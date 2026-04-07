@@ -665,6 +665,11 @@
           <span class="block-time">15:00–17:00</span>
           FL Cases: Makiri,<br>L v H
         </div>
+        <!-- 22:30–23:30 Wendy RE3 -->
+        <div class="block work" style="top:870px;height:57px">
+          <span class="block-time">22:30–23:30</span>
+          Wendy RE3
+        </div>
       </div>
     </div>
 
@@ -998,6 +1003,10 @@
         <label class="task-label" for="w0">Adult English <span class="tag time">Sun 19:10</span></label>
       </div>
       <div class="task-item work-item">
+        <input type="checkbox" id="wx" onchange="handleCheck(this)">
+        <label class="task-label" for="wx">Wendy RE3 <span class="tag time">Tue 22:30</span></label>
+      </div>
+      <div class="task-item work-item">
         <input type="checkbox" id="w1" onchange="handleCheck(this)">
         <label class="task-label" for="w1">English tutoring — Cody <span class="tag time">Wed 20:30</span></label>
       </div>
@@ -1195,7 +1204,7 @@
     calcProgress(['s1','s2','s3','s4','s5','s6','s7','s8','s9'], 'essay-prog', 'essay-prog-label');
     calcProgress(['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11'], 'tax-prog', 'tax-prog-label');
     calcProgress(['e1','e2','e3','f1','f2','f3','f4','l1'], 'other-prog', 'other-prog-label');
-    calcProgress(['w0','w1','w2','w3','w4','w5'], 'work-prog', 'work-prog-label');
+    calcProgress(['w0','wx','w1','w2','w3','w4','w5'], 'work-prog', 'work-prog-label');
   }
 
   function calcProgress(ids, barId, labelId) {
