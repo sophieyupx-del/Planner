@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planner | May 25–31, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f5f3ef; --surface:#fff; --border:#e2ddd6;
+    --text:#2c2825; --text-light:#7a7068; --text-xlight:#b0a89e;
+    --study:#5b87c5; --study-bg:#ddeaf8; --study-border:#a8c7ee;
+    --work:#3aa88a; --work-bg:#d4f0e8; --work-border:#8fd4c2;
+    --growth:#d4822a; --growth-bg:#fce8d0; --growth-border:#f0bf8a;
+    --chores:#9b6db5; --chores-bg:#eddff8; --chores-border:#cba8e8;
+    --deadline:#c84242; --deadline-bg:#fde8e8; --deadline-border:#e8a0a0;
+    --clsa:#3563b8; --clsa-bg:#dce8fa; --clsa-border:#8ab0ef;
+    --ff:#2a8a6e; --ff-bg:#d0f2e8; --ff-border:#7dd4bc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.5;padding:28px 24px 60px;}
+
+  .page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;padding-bottom:20px;border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:12px;}
+  .page-header h1{font-family:'Libre Baskerville',serif;font-size:26px;font-weight:700;letter-spacing:-0.3px;}
+  .page-header h1 span{font-weight:400;font-style:italic;color:var(--text-light);}
+  .header-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .badge{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+  .badge.sem{background:var(--study-bg);color:var(--study);border:1px solid var(--study-border);}
+  .badge.warn{background:var(--deadline-bg);color:var(--deadline);border:1px solid var(--deadline-border);}
+  .badge.ff{background:var(--ff-bg);color:var(--ff);border:1px solid var(--ff-border);}
+  #gh-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text-light);font-size:12px;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  #gh-status{width:7px;height:7px;border-radius:50%;background:#ccc;}
+  #gh-status.ok{background:#4caf7d;} #gh-status.err{background:var(--deadline);}
+
+  .banner{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-radius:8px;margin-bottom:10px;font-size:13px;font-weight:500;}
+  .banner.red{background:var(--deadline-bg);border:1px solid var(--deadline-border);color:var(--deadline);}
+  .banner.blue{background:var(--clsa-bg);border:1px solid var(--clsa-border);color:var(--clsa);}
+  .banner.ff{background:var(--ff-bg);border:1px solid var(--ff-border);color:var(--ff);}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-light);}
+  .legend-dot{width:8px;height:8px;border-radius:2px;}
+  .legend-dot.study{background:var(--study);} .legend-dot.work{background:var(--work);}
+  .legend-dot.growth{background:var(--growth);} .legend-dot.clsa{background:var(--clsa);}
+  .legend-dot.ff{background:var(--ff);} .legend-dot.deadline{background:var(--deadline);}
+
+  .section-title{font-family:'Libre Baskerville',serif;font-size:13px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-xlight);margin-bottom:12px;}
+
+  .calendar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;margin-bottom:32px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .calendar-inner{display:flex;min-width:860px;}
+  .time-col{width:46px;flex-shrink:0;padding-top:40px;border-right:1px solid var(--border);}
+  .time-label{height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:8px;padding-top:3px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-xlight);}
+  .day-col{flex:1;min-width:100px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+  .day-col:last-child{border-right:none;}
+  .day-header{height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-light);background:#faf9f7;position:sticky;top:0;z-index:2;}
+  .day-header .day-num{font-family:'Libre Baskerville',serif;font-size:15px;font-weight:700;color:var(--text);line-height:1;margin-top:1px;}
+  .overnight-note{font-size:9px;padding:2px 5px;background:var(--work-bg);border-bottom:1px solid var(--work-border);color:var(--work);font-weight:600;text-align:center;font-family:'DM Mono',monospace;}
+  .day-body{position:relative;height:930px;}
+  .hour-line{position:absolute;left:0;right:0;border-top:1px solid #f0ece6;height:60px;}
+  .block{position:absolute;left:3px;right:3px;border-radius:5px;padding:4px 6px;font-size:10.5px;font-weight:500;line-height:1.3;overflow:hidden;cursor:default;}
+  .block.study{background:var(--study-bg);border-left:3px solid var(--study);color:var(--study);}
+  .block.work{background:var(--work-bg);border-left:3px solid var(--work);color:var(--work);}
+  .block.growth{background:var(--growth-bg);border-left:3px solid var(--growth);color:var(--growth);}
+  .block.clsa{background:var(--clsa-bg);border-left:3px solid var(--clsa);color:var(--clsa);font-weight:700;}
+  .block.ff{background:var(--ff-bg);border-left:3px solid var(--ff);color:var(--ff);font-weight:600;}
+  .block.deadline{background:var(--deadline-bg);border-left:3px solid var(--deadline);color:var(--deadline);font-weight:700;font-size:10px;}
+  .block .bt{font-family:'DM Mono',monospace;font-size:9px;opacity:.75;display:block;margin-bottom:1px;}
+
+  .tasks-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}
+  @media(max-width:700px){.tasks-grid{grid-template-columns:1fr;}}
+  .task-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .task-card.full{grid-column:1/-1;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:12.5px;background:#faf9f7;}
+  .card-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .card-dot.study{background:var(--study);} .card-dot.work{background:var(--work);}
+  .card-dot.clsa{background:var(--clsa);} .card-dot.ff{background:var(--ff);}
+  .card-dot.deadline{background:var(--deadline);}
+  .task-section{padding:0 16px;}
+  .task-section-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-xlight);padding:10px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+  .task-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f5f3ef;}
+  .task-item:last-child{border-bottom:none;}
+  .task-item input[type=checkbox]{margin-top:2px;width:14px;height:14px;flex-shrink:0;cursor:pointer;accent-color:var(--study);}
+  .task-item.work-item input[type=checkbox]{accent-color:var(--work);}
+  .task-item.clsa-item input[type=checkbox]{accent-color:var(--clsa);}
+  .task-item.ff-item input[type=checkbox]{accent-color:var(--ff);}
+  .task-label{font-size:13px;color:var(--text);line-height:1.45;flex:1;}
+  .tag{display:inline-block;font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+  .tag.deadline{background:var(--deadline-bg);color:var(--deadline);}
+  .tag.time{background:var(--work-bg);color:var(--work);font-family:'DM Mono',monospace;}
+  .tag.ff{background:var(--ff-bg);color:var(--ff);}
+  .task-item.done .task-label{text-decoration:line-through;color:var(--text-xlight);}
+  .progress-wrap{padding:10px 16px 12px;border-top:1px solid var(--border);}
+  .progress-bar-bg{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-bar-fill{height:100%;border-radius:2px;transition:width .3s;}
+  .progress-bar-fill.study{background:var(--study);} .progress-bar-fill.work{background:var(--work);}
+  .progress-bar-fill.clsa{background:var(--clsa);} .progress-bar-fill.ff{background:var(--ff);}
+  .progress-label{font-size:10px;color:var(--text-xlight);margin-top:5px;font-family:'DM Mono',monospace;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,40,37,.45);z-index:100;align-items:center;justify-content:center;}
+  .modal-overlay.active{display:flex;}
+  .modal{background:var(--surface);border-radius:12px;padding:24px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,.12);}
+  .modal h3{font-family:'Libre Baskerville',serif;font-size:16px;margin-bottom:6px;}
+  .modal p{font-size:12.5px;color:var(--text-light);margin-bottom:14px;}
+  .modal input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:12px;outline:none;}
+  .modal input:focus{border-color:var(--study);}
+  .modal-actions{display:flex;gap:8px;}
+  .btn-primary{flex:1;padding:8px;background:var(--study);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+  .btn-secondary{padding:8px 14px;background:transparent;color:var(--text-light);border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div>
+    <h1>Week Planner <span>May 25–31, 2026</span></h1>
+  </div>
+  <div class="header-meta">
+    <span class="badge sem">📚 Week 11</span>
+    <span class="badge ff">📁 Family File (80%)</span>
+    <span class="badge warn">📝 Law 297 Assign. (35%)</span>
+    <button id="gh-btn" onclick="openModal()"><span id="gh-status"></span>GitHub Sync</button>
+  </div>
+</header>
+
+<div class="banner ff">📁 <span><strong>Family File</strong> — Legal Opinion (50%) + Client correspondence (30%)　｜　<strong>Client meeting Thu May 28 · 12:00–14:00</strong></span></div>
+<div class="banner blue">⚖️ <span><strong>CLSA volunteer</strong> — Tue May 26 · 11:00–15:00</span></div>
+<div class="banner red">📚 <span><strong>Exam study:</strong> Land Law Mortgages · Equity Remedies &amp; Tracing</span></div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot study"></div>Study / Class</div>
+  <div class="legend-item"><div class="legend-dot ff"></div>Family File</div>
+  <div class="legend-item"><div class="legend-dot work"></div>Work (Tutoring)</div>
+  <div class="legend-item"><div class="legend-dot clsa"></div>CLSA</div>
+  <div class="legend-item"><div class="legend-dot growth"></div>Growth</div>
+</div>
+
+<p class="section-title">Weekly Calendar — 08:00 to 23:30</p>
+<div class="calendar-wrap"><div class="calendar-inner">
+
+  <div class="time-col">
+    <div class="time-label">08</div><div class="time-label">09</div><div class="time-label">10</div>
+    <div class="time-label">11</div><div class="time-label">12</div><div class="time-label">13</div>
+    <div class="time-label">14</div><div class="time-label">15</div><div class="time-label">16</div>
+    <div class="time-label">17</div><div class="time-label">18</div><div class="time-label">19</div>
+    <div class="time-label">20</div><div class="time-label">21</div><div class="time-label">22</div>
+    <div class="time-label">23</div>
+  </div>
+
+  <!-- MON 25 -->
+  <div class="day-col">
+    <div class="day-header">MON<div class="day-num">25</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 08:30–10:00 Land Law exam study -->
+      <div class="block study" style="top:30px;height:90px">
+        <span class="bt">08:30–10:00</span>Land Law exam<br>Mortgages Lec 1
+      </div>
+      <!-- 10:00–12:00 LAW 305 Land Law -->
+      <div class="block study" style="top:120px;height:120px">
+        <span class="bt">10:00–12:00</span>🏛️ LAW 305<br>Land Law
+      </div>
+      <!-- 12:30–14:45 Study / Family File -->
+      <div class="block ff" style="top:270px;height:135px">
+        <span class="bt">12:30–14:45</span>📁 Family File<br>Legal Opinion<br>research
+      </div>
+      <!-- 15:00–17:00 LAW 304 Equity -->
+      <div class="block study" style="top:420px;height:120px">
+        <span class="bt">15:00–17:00</span>🏛️ LAW 304<br>Equity
+      </div>
+      <!-- 17:30–19:00 Growth commute + Equity exam prep -->
+      <div class="block growth" style="top:570px;height:90px">
+        <span class="bt">17:30–19:00</span>Growth (commute)<br>Equity Remedies Lec 1
+      </div>
+      <!-- 19:30–21:30 Family File research -->
+      <div class="block ff" style="top:690px;height:120px">
+        <span class="bt">19:30–21:30</span>📁 FF Research:<br>Day-care, Guard.,<br>Child support
+      </div>
+    </div>
+  </div>
+
+  <!-- TUE 26 -->
+  <div class="day-col">
+    <div class="day-header">TUE<div class="day-num">26</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 09:00–11:00 FF research + prep for CLSA -->
+      <div class="block ff" style="top:60px;height:120px">
+        <span class="bt">09:00–11:00</span>📁 FF Research:<br>Surrogacy, Embryos,<br>Property
+      </div>
+      <!-- 11:00–15:00 CLSA -->
+      <div class="block clsa" style="top:180px;height:240px">
+        <span class="bt">11:00–15:00</span>⚖️ CLSA<br>法律援助实习
+      </div>
+      <!-- 15:30–17:30 FF research cont. -->
+      <div class="block ff" style="top:450px;height:120px">
+        <span class="bt">15:30–17:30</span>📁 FF Research:<br>Maintenance, Diss.,<br>New relationships
+      </div>
+      <!-- 18:00–20:00 Land Law mortgages -->
+      <div class="block study" style="top:600px;height:120px">
+        <span class="bt">18:00–20:00</span>Land Law exam:<br>Mortgages Lec 2<br>+ Sanders article
+      </div>
+      <!-- 22:30–23:30 Wendy RE3 -->
+      <div class="block work" style="top:870px;height:57px">
+        <span class="bt">22:30–23:30</span>Wendy RE3
+      </div>
+    </div>
+  </div>
+
+  <!-- WED 27 -->
+  <div class="day-col">
+    <div class="day-header">WED<div class="day-num">27</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 08:30–10:00 Equity exam cases -->
+      <div class="block study" style="top:30px;height:90px">
+        <span class="bt">08:30–10:00</span>Equity exam:<br>Bainbridge, Erlanger
+      </div>
+      <!-- 10:00–11:00 Equity tutorial -->
+      <div class="block study" style="top:120px;height:57px">
+        <span class="bt">10:00–11:00</span>🏛️ LAW 304 Tutorial
+      </div>
+      <!-- 11:00–12:00 Land Law tutorial -->
+      <div class="block study" style="top:180px;height:57px">
+        <span class="bt">11:00–12:00</span>🏛️ LAW 305 Tutorial
+      </div>
+      <!-- 12:30–14:30 FF client correspondence prep -->
+      <div class="block ff" style="top:270px;height:120px">
+        <span class="bt">12:30–14:30</span>📁 FF: Draft letter<br>to client
+      </div>
+      <!-- 14:30–16:30 Law 297 elements analysis -->
+      <div class="block study" style="top:390px;height:120px">
+        <span class="bt">14:30–16:30</span>Law 297: Elements<br>analysis chart
+      </div>
+      <!-- 17:00–19:00 Equity exam cases cont. -->
+      <div class="block study" style="top:540px;height:120px">
+        <span class="bt">17:00–19:00</span>Equity exam:<br>Alati, Latec,<br>Maguire
+      </div>
+      <!-- 20:30–22:00 Cody -->
+      <div class="block work" style="top:750px;height:90px">
+        <span class="bt">20:30–22:00</span>Tutoring — Cody
+      </div>
+      <!-- 23:00 Owen -->
+      <div class="block work" style="top:900px;height:27px">
+        <span class="bt">23:00–00:00</span>Owen
+      </div>
+    </div>
+  </div>
+
+  <!-- THU 28 -->
+  <div class="day-col">
+    <div class="day-header">THU<div class="day-num">28</div></div>
+    <div class="overnight-note">⚡ 00:00–01:00 Owen cont.</div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 09:00–12:00 FF client meeting prep -->
+      <div class="block ff" style="top:60px;height:180px">
+        <span class="bt">09:00–12:00</span>📁 FF: Client mtg<br>prep + negotiation<br>plan draft
+      </div>
+      <!-- 12:00–14:00 Client meeting -->
+      <div class="block ff" style="top:240px;height:120px">
+        <span class="bt">12:00–14:00</span>📁 CLIENT MEETING<br>— Family File
+      </div>
+      <!-- 14:00–15:00 LAWCOMM 416 Tax -->
+      <div class="block study" style="top:360px;height:60px">
+        <span class="bt">14:00–15:00</span>🏛️ LAWCOMM 416
+      </div>
+      <!-- 15:30–17:30 Law 297 elements: Shimmering Sands -->
+      <div class="block study" style="top:450px;height:120px">
+        <span class="bt">15:30–17:30</span>Law 297: Map legal<br>positions — voting<br>members + EC
+      </div>
+      <!-- 18:00–20:00 Land Law mortgages cases -->
+      <div class="block study" style="top:600px;height:120px">
+        <span class="bt">18:00–20:00</span>Land Law exam:<br>Noakes, Tse Kwong,<br>Ko and Jong
+      </div>
+      <!-- 20:30–22:00 FF client evaluation + letter -->
+      <div class="block ff" style="top:750px;height:90px">
+        <span class="bt">20:30–22:00</span>📁 FF: Client eval<br>+ arrange meeting<br>opp. lawyer
+      </div>
+    </div>
+  </div>
+
+  <!-- FRI 29 -->
+  <div class="day-col">
+    <div class="day-header">FRI<div class="day-num">29</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 10:00–12:00 LAWCOMM 416 Tax -->
+      <div class="block study" style="top:120px;height:120px">
+        <span class="bt">10:00–12:00</span>🏛️ LAWCOMM 416
+      </div>
+      <!-- 12:15–14:00 Growth commute + Equity exam -->
+      <div class="block growth" style="top:255px;height:105px">
+        <span class="bt">12:15–14:00</span>Growth (commute)<br>Equity Remedies Lec 2
+      </div>
+      <!-- 14:00–16:00 Law 297 -->
+      <div class="block study" style="top:360px;height:120px">
+        <span class="bt">14:00–16:00</span>🏛️ Law 297 Class
+      </div>
+      <!-- 16:30–18:00 Law 297: Golf NZ positions -->
+      <div class="block study" style="top:510px;height:90px">
+        <span class="bt">16:30–18:00</span>Law 297: Map<br>Golf NZ &amp; Executive
+      </div>
+      <!-- 18:00–20:00 RE2 -->
+      <div class="block work" style="top:600px;height:120px">
+        <span class="bt">18:00–20:00</span>Tutoring — RE2
+      </div>
+      <!-- 20:30–21:30 Cody Think 4 -->
+      <div class="block work" style="top:750px;height:60px">
+        <span class="bt">20:30–21:30</span>Cody Think 4
+      </div>
+    </div>
+  </div>
+
+  <!-- SAT 30 -->
+  <div class="day-col">
+    <div class="day-header">SAT<div class="day-num">30</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 09:00–12:00 Equity exam cases -->
+      <div class="block study" style="top:60px;height:180px">
+        <span class="bt">09:00–12:00</span>Equity exam:<br>BNZ, Premium RE,<br>Foskett v McKeown
+      </div>
+      <!-- 13:00–16:00 Land Law mortgages cases -->
+      <div class="block study" style="top:300px;height:180px">
+        <span class="bt">13:00–16:00</span>Land Law exam:<br>Downsview, Apple<br>Fields, Ko &amp; Jong (2)
+      </div>
+      <!-- 16:30–18:30 FF Legal Opinion draft -->
+      <div class="block ff" style="top:510px;height:120px">
+        <span class="bt">16:30–18:30</span>📁 FF: Legal Opinion<br>draft (begin)
+      </div>
+      <!-- 19:10–20:10 Adult English -->
+      <div class="block work" style="top:670px;height:60px">
+        <span class="bt">19:10–20:10</span>Adult English
+      </div>
+    </div>
+  </div>
+
+  <!-- SUN 31 -->
+  <div class="day-col">
+    <div class="day-header">SUN<div class="day-num">31</div></div>
+    <div class="day-body">
+      <div class="hour-line" style="top:0"></div><div class="hour-line" style="top:60px"></div><div class="hour-line" style="top:120px"></div>
+      <div class="hour-line" style="top:180px"></div><div class="hour-line" style="top:240px"></div><div class="hour-line" style="top:300px"></div>
+      <div class="hour-line" style="top:360px"></div><div class="hour-line" style="top:420px"></div><div class="hour-line" style="top:480px"></div>
+      <div class="hour-line" style="top:540px"></div><div class="hour-line" style="top:600px"></div><div class="hour-line" style="top:660px"></div>
+      <div class="hour-line" style="top:720px"></div><div class="hour-line" style="top:780px"></div><div class="hour-line" style="top:840px"></div><div class="hour-line" style="top:900px"></div>
+      <!-- 09:00–12:00 FF Legal Opinion cont. -->
+      <div class="block ff" style="top:60px;height:180px">
+        <span class="bt">09:00–12:00</span>📁 FF: Legal Opinion<br>cont. + polish
+      </div>
+      <!-- 13:00–16:00 Law 297 elements + review -->
+      <div class="block study" style="top:300px;height:180px">
+        <span class="bt">13:00–16:00</span>Law 297: Finalise<br>elements chart<br>+ review all
+      </div>
+      <!-- 16:30–18:30 Exam study catch-up flex -->
+      <div class="block study" style="top:510px;height:120px">
+        <span class="bt">16:30–18:30</span>Exam study<br>flex / catch-up
+      </div>
+      <!-- 19:10–20:10 Adult English -->
+      <div class="block work" style="top:670px;height:60px">
+        <span class="bt">19:10–20:10</span>Adult English
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- TASK LISTS -->
+<p class="section-title">Task Lists</p>
+<div class="tasks-grid">
+
+  <!-- Family File -->
+  <div class="task-card full" style="border-color:var(--ff-border)">
+    <div class="card-header" style="background:var(--ff-bg);color:var(--ff)">
+      <div class="card-dot ff"></div>📁 Family File — 80% of final grade
+    </div>
+    <div class="task-section">
+      <div class="task-section-label">Legal Opinion — 50% of grade</div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff1" onchange="handleCheck(this)"><label class="task-label" for="ff1">Research — Day-to-day care</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff2" onchange="handleCheck(this)"><label class="task-label" for="ff2">Research — Guardianship</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff3" onchange="handleCheck(this)"><label class="task-label" for="ff3">Research — Child support</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff4" onchange="handleCheck(this)"><label class="task-label" for="ff4">Research — Living arrangements</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff5" onchange="handleCheck(this)"><label class="task-label" for="ff5">Research — Surrogacy</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff6" onchange="handleCheck(this)"><label class="task-label" for="ff6">Research — Embryos</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff7" onchange="handleCheck(this)"><label class="task-label" for="ff7">Research — Property</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff8" onchange="handleCheck(this)"><label class="task-label" for="ff8">Research — Maintenance</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff9" onchange="handleCheck(this)"><label class="task-label" for="ff9">Research — Dissolution</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff10" onchange="handleCheck(this)"><label class="task-label" for="ff10">Research — New relationships</label></div>
+      <div class="task-section-label">Client Correspondence Document — 30% of grade</div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff11" onchange="handleCheck(this)"><label class="task-label" for="ff11">Prepare for client meeting <span class="tag time">Thu 12:00</span></label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff12" onchange="handleCheck(this)"><label class="task-label" for="ff12">Client meeting <span class="tag time">Thu 12:00–14:00</span></label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff13" onchange="handleCheck(this)"><label class="task-label" for="ff13">Letter to client</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff14" onchange="handleCheck(this)"><label class="task-label" for="ff14">Client evaluation</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff15" onchange="handleCheck(this)"><label class="task-label" for="ff15">Arrange meeting with opposing lawyer</label></div>
+      <div class="task-item ff-item"><input type="checkbox" id="ff16" onchange="handleCheck(this)"><label class="task-label" for="ff16">Negotiation plan</label></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill ff" id="ff-prog" style="width:0%"></div></div>
+      <div class="progress-label" id="ff-prog-label">0 / 16 complete</div>
+    </div>
+  </div>
+
+  <!-- Law 297 Elements Analysis -->
+  <div class="task-card">
+    <div class="card-header"><div class="card-dot study"></div>📝 Law 297 Elements Analysis — 35%</div>
+    <div class="task-section">
+      <div class="task-section-label">Elements Analysis Chart</div>
+      <div class="task-item"><input type="checkbox" id="l1" onchange="handleCheck(this)"><label class="task-label" for="l1">Complete elements analysis chart</label></div>
+      <div class="task-section-label">Map Legal Positions</div>
+      <div class="task-item"><input type="checkbox" id="l2" onchange="handleCheck(this)"><label class="task-label" for="l2">Full voting members of Shimmering Sands Golf Club</label></div>
+      <div class="task-item"><input type="checkbox" id="l3" onchange="handleCheck(this)"><label class="task-label" for="l3">Post-6th April purported Executive Committee of Shimmering Sands Golf Club</label></div>
+      <div class="task-item"><input type="checkbox" id="l4" onchange="handleCheck(this)"><label class="task-label" for="l4">Golf New Zealand and its Executive</label></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill study" id="l7-prog" style="width:0%"></div></div>
+      <div class="progress-label" id="l7-prog-label">0 / 4 complete</div>
+    </div>
+  </div>
+
+  <!-- Exam Study: Land Law -->
+  <div class="task-card">
+    <div class="card-header"><div class="card-dot study"></div>📚 Exam Study — Land Law Mortgages</div>
+    <div class="task-section">
+      <div class="task-section-label">Lectures</div>
+      <div class="task-item"><input type="checkbox" id="ll1" onchange="handleCheck(this)"><label class="task-label" for="ll1">Mortgages lecture 1</label></div>
+      <div class="task-item"><input type="checkbox" id="ll2" onchange="handleCheck(this)"><label class="task-label" for="ll2">Mortgages lecture 2</label></div>
+      <div class="task-section-label">Readings & Cases</div>
+      <div class="task-item"><input type="checkbox" id="ll3" onchange="handleCheck(this)"><label class="task-label" for="ll3">Katherine Sanders "Land Law" (2012) 3 NZ L Rev 545 at 546–553</label></div>
+      <div class="task-item"><input type="checkbox" id="ll4" onchange="handleCheck(this)"><label class="task-label" for="ll4">Noakes &amp; Co Ltd v Rice [1902] AC 24 (HL)</label></div>
+      <div class="task-item"><input type="checkbox" id="ll5" onchange="handleCheck(this)"><label class="task-label" for="ll5">Tse Kwong Lam v Wong Chit Sen [1983] 3 All ER 54 (PC)</label></div>
+      <div class="task-item"><input type="checkbox" id="ll6" onchange="handleCheck(this)"><label class="task-label" for="ll6">Downsview Nominees Ltd v First City Corp Ltd [1993] 1 NZLR 513 (PC)</label></div>
+      <div class="task-item"><input type="checkbox" id="ll7" onchange="handleCheck(this)"><label class="task-label" for="ll7">Apple Fields Ltd v Damesh Holdings Ltd [2001] 2 NZLR 586 (CA)</label></div>
+      <div class="task-item"><input type="checkbox" id="ll8" onchange="handleCheck(this)"><label class="task-label" for="ll8">Ko and Jong v Tea Custodians (Equitable) Ltd (injunctions)</label></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill study" id="ll-prog" style="width:0%"></div></div>
+      <div class="progress-label" id="ll-prog-label">0 / 8 complete</div>
+    </div>
+  </div>
+
+  <!-- Exam Study: Equity -->
+  <div class="task-card">
+    <div class="card-header"><div class="card-dot study"></div>📚 Exam Study — Equity Remedies &amp; Tracing</div>
+    <div class="task-section">
+      <div class="task-section-label">Lectures</div>
+      <div class="task-item"><input type="checkbox" id="eq1" onchange="handleCheck(this)"><label class="task-label" for="eq1">Equitable remedies lecture 1</label></div>
+      <div class="task-item"><input type="checkbox" id="eq2" onchange="handleCheck(this)"><label class="task-label" for="eq2">Equitable remedies lecture 2</label></div>
+      <div class="task-section-label">Cases</div>
+      <div class="task-item"><input type="checkbox" id="eq3" onchange="handleCheck(this)"><label class="task-label" for="eq3">Bainbridge v Bainbridge [2016] EWHC 898 (Ch) at [2]</label></div>
+      <div class="task-item"><input type="checkbox" id="eq4" onchange="handleCheck(this)"><label class="task-label" for="eq4">Erlanger v New Sombrero Phosphate Co (1878) 3 App Cas 1218 (HL)</label></div>
+      <div class="task-item"><input type="checkbox" id="eq5" onchange="handleCheck(this)"><label class="task-label" for="eq5">Alati v Kruger (1955) 94 CLR 216</label></div>
+      <div class="task-item"><input type="checkbox" id="eq6" onchange="handleCheck(this)"><label class="task-label" for="eq6">Latec v Hotel Terrigal (1965) 113 CLR 265</label></div>
+      <div class="task-item"><input type="checkbox" id="eq7" onchange="handleCheck(this)"><label class="task-label" for="eq7">Maguire v Makaronis [1997] HCA 23; (1997) 188 CLR 449</label></div>
+      <div class="task-item"><input type="checkbox" id="eq8" onchange="handleCheck(this)"><label class="task-label" for="eq8">BNZ v NZ Guardian Trust Co Ltd [1999] 1 NZLR 664 at 687 (CA)</label></div>
+      <div class="task-item"><input type="checkbox" id="eq9" onchange="handleCheck(this)"><label class="task-label" for="eq9">Premium Real Estate Ltd v Stevens [2009] 2 NZLR 384 at [37]–[41] and [85]</label></div>
+      <div class="task-item"><input type="checkbox" id="eq10" onchange="handleCheck(this)"><label class="task-label" for="eq10">Foskett v McKeown [2001] 1 AC 102 (HL)</label></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill study" id="eq-prog" style="width:0%"></div></div>
+      <div class="progress-label" id="eq-prog-label">0 / 10 complete</div>
+    </div>
+  </div>
+
+  <!-- Work + CLSA -->
+  <div class="task-card full">
+    <div class="card-header"><div class="card-dot work"></div>💼 Work &amp; ⚖️ CLSA</div>
+    <div class="task-section">
+      <div class="task-section-label">CLSA</div>
+      <div class="task-item clsa-item"><input type="checkbox" id="c1" onchange="handleCheck(this)"><label class="task-label" for="c1">CLSA volunteer session <span class="tag time">Tue 11:00–15:00</span></label></div>
+      <div class="task-section-label">Tutoring</div>
+      <div class="task-item work-item"><input type="checkbox" id="w1" onchange="handleCheck(this)"><label class="task-label" for="w1">Wendy RE3 <span class="tag time">Tue 22:30</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w2" onchange="handleCheck(this)"><label class="task-label" for="w2">English tutoring — Cody <span class="tag time">Wed 20:30</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w3" onchange="handleCheck(this)"><label class="task-label" for="w3">Tutoring — Owen <span class="tag time">Wed 23:00</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w4" onchange="handleCheck(this)"><label class="task-label" for="w4">RE2 tutoring <span class="tag time">Fri 18:00</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w5" onchange="handleCheck(this)"><label class="task-label" for="w5">Cody — Think 4 <span class="tag time">Fri 20:30</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w6" onchange="handleCheck(this)"><label class="task-label" for="w6">Adult English <span class="tag time">Sat 19:10</span></label></div>
+      <div class="task-item work-item"><input type="checkbox" id="w7" onchange="handleCheck(this)"><label class="task-label" for="w7">Adult English <span class="tag time">Sun 19:10</span></label></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill work" id="wk-prog" style="width:0%"></div></div>
+      <div class="progress-label" id="wk-prog-label">0 / 8 complete</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>GitHub Sync</h3>
+    <p>Enter your GitHub personal access token to save checkbox states.</p>
+    <input type="text" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveToken()">Save &amp; Sync</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const REPO='sophieyupx-del/Planner', FILE='state-0525.json', WEEK_KEY='week0525';
+  let ghToken=localStorage.getItem('gh_token')||'', fileSha=null, state={}, saveTimer=null;
+
+  window.addEventListener('DOMContentLoaded',async()=>{
+    updateStatusDot('idle');
+    if(ghToken) await loadState();
+    updateAllProgress();
+  });
+
+  function openModal(){document.getElementById('modal').classList.add('active');document.getElementById('token-input').value=ghToken;}
+  function closeModal(){document.getElementById('modal').classList.remove('active');}
+  async function saveToken(){ghToken=document.getElementById('token-input').value.trim();localStorage.setItem('gh_token',ghToken);closeModal();await loadState();}
+  function updateStatusDot(s){const d=document.getElementById('gh-status');d.className=s==='ok'?'ok':s==='err'?'err':'';}
+
+  async function loadState(){
+    if(!ghToken)return;
+    try{
+      const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{headers:{Authorization:`token ${ghToken}`,Accept:'application/vnd.github.v3+json'}});
+      if(res.status===404){updateStatusDot('ok');return;}
+      if(!res.ok)throw new Error(res.status);
+      const data=await res.json();
+      fileSha=data.sha;
+      state=JSON.parse(atob(data.content.replace(/\n/g,'')))[WEEK_KEY]||{};
+      applyState();updateStatusDot('ok');
+    }catch(e){console.error(e);updateStatusDot('err');}
+  }
+
+  function applyState(){
+    document.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.checked=!!state[cb.id];
+      cb.closest('.task-item').classList.toggle('done',cb.checked);
+    });
+  }
+
+  function handleCheck(cb){
+    cb.closest('.task-item').classList.toggle('done',cb.checked);
+    state[cb.id]=cb.checked;
+    updateAllProgress();
+    clearTimeout(saveTimer);saveTimer=setTimeout(saveState,1200);
+  }
+
+  async function saveState(){
+    if(!ghToken)return;
+    try{
+      let sha=fileSha, full={};
+      const check=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{headers:{Authorization:`token ${ghToken}`}});
+      if(check.ok){const d=await check.json();sha=d.sha;full=JSON.parse(atob(d.content.replace(/\n/g,'')));}
+      full[WEEK_KEY]=state;
+      const body={message:`Update ${WEEK_KEY}`,content:btoa(unescape(encodeURIComponent(JSON.stringify(full,null,2))))};
+      if(sha)body.sha=sha;
+      const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{method:'PUT',headers:{Authorization:`token ${ghToken}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+      if(!res.ok)throw new Error(res.status);
+      const r=await res.json();fileSha=r.content.sha;updateStatusDot('ok');
+    }catch(e){console.error(e);updateStatusDot('err');}
+  }
+
+  function updateAllProgress(){
+    calcProgress(['ff1','ff2','ff3','ff4','ff5','ff6','ff7','ff8','ff9','ff10','ff11','ff12','ff13','ff14','ff15','ff16'],'ff-prog','ff-prog-label');
+    calcProgress(['l1','l2','l3','l4'],'l7-prog','l7-prog-label');
+    calcProgress(['ll1','ll2','ll3','ll4','ll5','ll6','ll7','ll8'],'ll-prog','ll-prog-label');
+    calcProgress(['eq1','eq2','eq3','eq4','eq5','eq6','eq7','eq8','eq9','eq10'],'eq-prog','eq-prog-label');
+    calcProgress(['c1','w1','w2','w3','w4','w5','w6','w7'],'wk-prog','wk-prog-label');
+  }
+
+  function calcProgress(ids,barId,labelId){
+    const total=ids.length, checked=ids.filter(id=>document.getElementById(id)?.checked).length;
+    const pct=total?Math.round(checked/total*100):0;
+    const bar=document.getElementById(barId),lbl=document.getElementById(labelId);
+    if(bar)bar.style.width=pct+'%';
+    if(lbl)lbl.textContent=`${checked} / ${total} complete`;
+  }
+</script>
+</body>
+</html>
