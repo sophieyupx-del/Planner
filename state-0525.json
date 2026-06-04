@@ -16,7 +16,7 @@
     "ff7": true,
     "ff11": true,
     "ff12": true,
-    "ff14": false,
+    "ff14": true,
     "ff15": true,
     "w4": true,
     "w5": true,
@@ -25,6 +25,8 @@
     "l1": true,
     "l2": true,
     "l3": true,
-    "l4": true
+    "l4": true,
+    "ff13": false,
+    "ff16": true
   }
 }
