@@ -26,7 +26,7 @@
     "l2": true,
     "l3": true,
     "l4": true,
-    "ff13": false,
+    "ff13": true,
     "ff16": true
   }
 }
